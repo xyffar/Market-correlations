@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import itertools # Per generare combinazioni di identificatori
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 # Importa le funzioni dai file di utilità
 from data_loader import get_data_for_identifier
