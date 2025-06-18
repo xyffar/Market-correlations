@@ -4,3 +4,4 @@ pandas
 numpy
 matplotlib
 requests
+fredapi # Nuova dipendenza
