@@ -80,7 +80,7 @@ selected_interval_label = st.sidebar.selectbox(
 yf_interval = interval_options[selected_interval_label]
 
 # 4. Selezione del tipo di prezzo per Yahoo Finance
-price_type_options = ["Adj Close", "Close", "Open", "High", "Low"] # Re-aggiunto "Adj Close"
+price_type_options = ["Close", "Close", "Open", "High", "Low"] # Re-aggiunto "Adj Close"
 selected_price_type = st.sidebar.selectbox(
     "Tipo di Prezzo (per Yahoo Finance):",
     options=price_type_options,
