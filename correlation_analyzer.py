@@ -55,7 +55,7 @@ def calculate_cross_correlation(series1: pd.Series, series2: pd.Series, max_lags
     }).dropna()
 
     if aligned_data.empty:
-        return None, None, None, "Errore: Nessun dato comune trovato tra le serie pre-processate per la correlazione."
+        return None, None, None, "Errore: Nessun dato comune trovato tra le serie pre-processate per la correlazione dopo l'allineamento iniziale."
 
     series1_aligned = aligned_data['series1']
     series2_aligned = aligned_data['series2']
@@ -63,22 +63,46 @@ def calculate_cross_correlation(series1: pd.Series, series2: pd.Series, max_lags
     lags_range = np.arange(-max_lags, max_lags + 1)
     cross_correlations = []
 
-    # Calcolo della cross-correlazione usando lo shift di pandas
     for lag in lags_range:
+        # Crea un DataFrame temporaneo per ogni lag, allineando esplicitamente dopo lo shift
         if lag >= 0:
-            # Correlazione tra series1[t] e series2[t-lag]
-            # Se lag > 0, series2 si verifica prima (anticipa) series1
-            corr = series1_aligned.corr(series2_aligned.shift(lag))
+            # Correlazione tra series1_aligned e series2_aligned shiftata di 'lag' periodi
+            # Questo allinea series1[t] con series2[t-lag]
+            # (ovvero, i valori di series2 da 'lag' periodi fa)
+            temp_df = pd.DataFrame({
+                's1': series1_aligned,
+                's2_shifted': series2_aligned.shift(lag)
+            }).dropna() # Elimina i NaN introdotti dallo shifting e disallineamento
         else:
-            # Correlazione tra series1[t] e series2[t-|lag|]
-            # Se lag < 0, series1 si verifica prima (anticipa) series2
-            corr = series1_aligned.shift(-lag).corr(series2_aligned)
-        cross_correlations.append(corr)
+            # Correlazione tra series1_aligned shiftata di '|lag|' periodi e series2_aligned
+            # Questo allinea series1[t-|lag|] con series2[t]
+            # (ovvero, i valori di series1 da '|lag|' periodi fa)
+            temp_df = pd.DataFrame({
+                's1_shifted': series1_aligned.shift(-lag), # -lag è positivo qui
+                's2': series2_aligned
+            }).dropna() # Elimina i NaN introdotti dallo shifting e disallineamento
+
+        if len(temp_df) >= 2: # Sono necessari almeno 2 punti dati per calcolare la correlazione
+            if lag >= 0:
+                corr = temp_df['s1'].corr(temp_df['s2_shifted'])
+            else:
+                corr = temp_df['s1_shifted'].corr(temp_df['s2'])
+            cross_correlations.append(corr)
+        else:
+            # Non ci sono abbastanza punti dati sovrapposti per questo specifico lag
+            cross_correlations.append(np.nan)
 
     cross_correlations = np.array(cross_correlations)
 
-    # Trova il lag con la massima correlazione in valore assoluto
-    max_corr_abs_idx = np.argmax(np.abs(cross_correlations))
+    # Verifica se tutte le correlazioni sono NaN (es. a causa di serie molto corte o lag eccessivi)
+    if np.all(np.isnan(cross_correlations)):
+        return None, None, None, "Errore: Impossibile calcolare correlazioni valide. Le serie potrebbero essere troppo corte per il massimo lag selezionato, o contengono valori costanti/mancanti dopo la pre-elaborazione."
+    
+    # Se ci sono NaN ma non tutti i valori sono NaN, np.nanargmax ignorerà i NaN
+    # e troverà il massimo tra i valori non-NaN.
+    # np.nanargmax gestisce i NaN ignorandoli; se tutti sono NaN, solleva ValueError.
+    # Abbiamo già gestito il caso di tutti i NaN sopra, quindi ora dovrebbe essere sicuro.
+    max_corr_abs_idx = np.nanargmax(np.abs(cross_correlations))
     best_lag = lags_range[max_corr_abs_idx]
     max_corr_value = cross_correlations[max_corr_abs_idx]
 
@@ -100,7 +124,9 @@ def plot_cross_correlation(lags: np.ndarray, correlations: np.ndarray, ticker1_n
         matplotlib.figure.Figure: L'oggetto figura del grafico.
     """
     fig_corr, ax_corr = plt.subplots(figsize=(8, 4))
-    ax_corr.stem(lags, correlations) # Rimosso use_line_collection=True
+    # Filtra i NaN per evitare problemi di plotting se alcune correlazioni sono NaN
+    valid_indices = ~np.isnan(correlations)
+    ax_corr.stem(lags[valid_indices], correlations[valid_indices])
     ax_corr.set_title(f'Cross-Correlazione Rendimenti', fontsize=12)
     ax_corr.set_xlabel(f'Lag (Periodi {selected_interval_label}) - Positivo: {ticker2_name} anticipa {ticker1_name}; Negativo: {ticker1_name} anticipa {ticker2_name}', fontsize=10)
     ax_corr.set_ylabel('Coefficiente di Correlazione', fontsize=10)
@@ -188,4 +214,3 @@ def plot_data_trends(data_df: pd.DataFrame, identifier1_name: str, identifier2_n
 
         plt.tight_layout()
         return fig_prices
-
