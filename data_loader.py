@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import requests
-from fredapi import Fred # Importa la libreria fredapi
+import pandas_datareader.data as web # Importa pandas_datareader
 
 def get_yfinance_data(ticker: str, start_date: str, end_date: str, interval: str, price_type: str = "Close"):
     """
@@ -47,9 +47,9 @@ def get_yfinance_data(ticker: str, start_date: str, end_date: str, interval: str
     except Exception as e:
         return None, None, f"Errore durante il download o l'elaborazione da Yahoo Finance per '{ticker}': {e}"
 
-def get_fred_data(series_id: str, start_date: str, end_date: str, api_key: str): # Aggiunto api_key
+def get_fred_data(series_id: str, start_date: str, end_date: str):
     """
-    Scarica i dati storici da FRED (Federal Reserve Economic Data) per un dato series_id usando l'API.
+    Scarica i dati storici da FRED (Federal Reserve Economic Data) per un dato series_id usando pandas_datareader.
 
     Args:
         series_id (str): L'ID della serie FRED (es. 'UNRATE', 'DGS10').
@@ -62,16 +62,18 @@ def get_fred_data(series_id: str, start_date: str, end_date: str, api_key: str):
                 Serie dei dati FRED, frequenza inferita, messaggio di errore.
     """
     try:
-        if not api_key:
-            return None, None, "Errore: Chiave API FRED non fornita. Necessaria per scaricare dati FRED."
-
-        fred = Fred(api_key=api_key)
-        series_data = fred.get_series(series_id, observation_start=start_date, observation_end=end_date)
+        # pandas_datareader gestisce la data di inizio e fine direttamente
+        series_data = web.DataReader(series_id, 'fred', start=start_date, end=end_date)
 
         if series_data is None or series_data.empty:
             return None, None, f"Errore: Nessun dato FRED disponibile per '{series_id}' nel periodo specificato o chiave API non valida."
 
-        series_data.name = series_id
+        # DataReader restituisce un DataFrame con una colonna, la convertiamo in Series
+        if isinstance(series_data, pd.DataFrame):
+            series_data = series_data.iloc[:, 0]
+        
+        series_data.name = series_id # Imposta il nome della serie
+
         # Assicurati che l'indice sia di tipo datetime
         series_data.index = pd.to_datetime(series_data.index)
         
@@ -80,7 +82,7 @@ def get_fred_data(series_id: str, start_date: str, end_date: str, api_key: str):
     except Exception as e:
         return None, None, f"Errore durante il download o l'elaborazione da FRED per '{series_id}' (con API): {e}. Controlla la chiave API e l'ID serie."
 
-def get_data_for_identifier(identifier: str, start_date: str, end_date: str, yf_interval: str, yf_price_type: str = "Close", fred_api_key: str = None):
+def get_data_for_identifier(identifier: str, start_date: str, end_date: str, yf_interval: str, yf_price_type: str = "Close"):
     """
     Funzione wrapper per scaricare dati, distinguendo tra Yahoo Finance e FRED.
 
@@ -102,6 +104,6 @@ def get_data_for_identifier(identifier: str, start_date: str, end_date: str, yf_
                         'NEWORDER', 'IPMAN', 'ISRATIO', 'HOUST', 'TCU', 'DSPIC96', 'CPILFESL']
 
     if identifier in fred_series_ids:
-        return get_fred_data(identifier, start_date, end_date, fred_api_key) # Passa la chiave API
+        return get_fred_data(identifier, start_date, end_date) # Passa la chiave API
     else:
         return get_yfinance_data(identifier, start_date, end_date, yf_interval, yf_price_type)
