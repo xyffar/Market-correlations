@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt # Assicurati che sia importato qui per plt.close
 from data_loader import get_data_for_identifier
 from correlation_analyzer import calculate_cross_correlation, plot_cross_correlation, plot_data_trends
 
-# Imposta il titolo dell'applicazione Streamlit
+# Imposta il titolo dell'applicazione Streamlit con un'emoji
 st.set_page_config(
-    page_title="Cross-Correlazione Finanziaria",
+    page_title="📈 Cross-Correlazione Finanziaria", # Emoji aggiunta qui
     layout="wide",
     initial_sidebar_state="expanded"
 )
