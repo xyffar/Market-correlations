@@ -32,6 +32,19 @@ def close_popup():
 # --- Campi di Input nella Sidebar ---
 st.sidebar.header("Parametri di Input")
 
+# Aggiungi l'input per la chiave API FRED
+fred_api_key = st.sidebar.text_input(
+    "Chiave API FRED (obbligatoria per dati FRED):",
+    type="password", # Nasconde la chiave mentre viene digitata
+    help="Ottieni la tua chiave API gratuita su https://fred.stlouisfed.org/docs/api/api_key.html. Puoi anche impostarla come variabile d'ambiente 'FRED_API_KEY' sul tuo sistema."
+)
+
+# Definizione della lista di FRED series IDs anche in app.py per passarla al plotting
+fred_series_ids = ['UNRATE', 'DGS10', 'DGS02', 'DGS30',
+                   'GDPC1', 'CPIAUCSL', 'FEDFUNDS', 'RSAFS', 'INDPRO',
+                   'UMICHCSII', 'PERMIT', 'ICSA', 'AWHMAN',
+                   'NEWORDER', 'IPMAN', 'ISRATIO', 'HOUST', 'TCU', 'DSPIC96', 'CPILFESL']
+
 # 1. Text box per i ticker/serie dati
 identifier_input = st.sidebar.text_area(
     "Inserisci i simboli (es. SPY, GLD) o ID serie FRED (es. UNRATE, DGS10) separati da virgole o spazi:",
@@ -67,7 +80,7 @@ selected_interval_label = st.sidebar.selectbox(
 yf_interval = interval_options[selected_interval_label]
 
 # 4. Selezione del tipo di prezzo per Yahoo Finance
-price_type_options = ["Close", "Open", "High", "Low"]
+price_type_options = ["Adj Close", "Close", "Open", "High", "Low"] # Re-aggiunto "Adj Close"
 selected_price_type = st.sidebar.selectbox(
     "Tipo di Prezzo (per Yahoo Finance):",
     options=price_type_options,
@@ -127,6 +140,7 @@ if st.sidebar.button("Esegui Analisi"):
                     end_date.strftime('%Y-%m-%d'),
                     yf_interval,
                     selected_price_type,
+                    fred_api_key # Passa qui la chiave API
                 )
                 if error:
                     st.error(f"Errore durante il download o la determinazione della frequenza per '{identifier}': {error}")
@@ -231,7 +245,7 @@ if st.sidebar.button("Esegui Analisi"):
                             id1, id2,
                             text_summary_content,
                             plot_cross_correlation(lags, correlations, id1, id2, correlation_frequency_label),
-                            plot_data_trends(combined_resampled_data_df, id1, id2)
+                            plot_data_trends(combined_resampled_data_df, id1, id2, fred_series_ids) # Passa fred_series_ids qui
                         ))
                     else:
                         st.error(f"Errore calcolo correlazione per {id1} vs {id2}: {corr_error}")
