@@ -302,8 +302,7 @@ if st.session_state.show_popup:
 @st.dialog("Info about available economic indicators")
 def show_infos():
     st.write(f"Why is {item} your favorite?")
-    if st.button("Submit"):
-        st.session_state.vote = {"item": item, "reason": reason}
+    if st.button("Chiudi", on_click=close_popup):
         st.rerun()
 
 
