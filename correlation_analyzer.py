@@ -111,33 +111,100 @@ def plot_cross_correlation(lags: np.ndarray, correlations: np.ndarray, ticker1_n
     plt.tight_layout()
     return fig_corr
 
-def plot_data_trends(data_df: pd.DataFrame, identifier1_name: str, identifier2_name: str):
+def plot_data_trends(data_df: pd.DataFrame, identifier1_name: str, identifier2_name: str, fred_series_ids: list):
     """
-    Genera un grafico a linee dell'andamento dei dati grezzi.
+    Genera un grafico a linee dell'andamento dei dati grezzi, adattandosi al tipo di dati.
 
     Args:
         data_df (pd.DataFrame): DataFrame contenente i dati grezzi dei due identificatori.
         identifier1_name (str): Nome del primo identificatore.
         identifier2_name (str): Nome del secondo identificatore.
+        fred_series_ids (list): Lista degli ID delle serie FRED per identificare gli indicatori economici.
 
     Returns:
         matplotlib.figure.Figure: L'oggetto figura del grafico.
     """
-    fig_prices, ax_prices = plt.subplots(figsize=(8, 4))
-    
-    # I nomi delle colonne nel DataFrame 'data_df' sono già gli identificatori stessi
-    # (es. 'SPY', 'UNRATE'), grazie a come le serie vengono nominate in data_loader.py.
-    # Non è più necessario verificare la presenza di '_Adj Close'.
-    col1_name_for_plot = identifier1_name
-    col2_name_for_plot = identifier2_name
+    is_id1_fred = identifier1_name in fred_series_ids
+    is_id2_fred = identifier2_name in fred_series_ids
 
-    ax_prices.plot(data_df.index, data_df[col1_name_for_plot], label=identifier1_name, color='blue')
-    ax_prices.plot(data_df.index, data_df[col2_name_for_plot], label=identifier2_name, color='green')
-    ax_prices.set_title(f'Andamento Dati {identifier1_name} vs {identifier2_name}', fontsize=12)
-    ax_prices.set_xlabel('Data', fontsize=10)
-    ax_prices.set_ylabel('Valore', fontsize=10) # Etichetta più generica per adattarsi a prezzi/tassi
-    ax_prices.grid(True, linestyle='--', alpha=0.6)
-    ax_prices.legend()
-    plt.tight_layout()
-    return fig_prices
+    # Caso 1: Entrambi sono prezzi (non FRED)
+    if not is_id1_fred and not is_id2_fred:
+        fig_prices, ax_prices = plt.subplots(figsize=(8, 4))
+        
+        # Calcola l'aumento percentuale rispetto al valore iniziale
+        initial_value_1 = data_df[identifier1_name].iloc[0]
+        initial_value_2 = data_df[identifier2_name].iloc[0]
+
+        if initial_value_1 == 0 or initial_value_2 == 0:
+            # Gestisci il caso in cui il valore iniziale sia zero per evitare divisione per zero
+            ax_prices.set_title(f'Andamento Dati {identifier1_name} vs {identifier2_name}\n(Impossibile calcolare aumento % per valore iniziale zero)', fontsize=12)
+            ax_prices.plot(data_df.index, data_df[identifier1_name], label=identifier1_name, color='blue')
+            ax_prices.plot(data_df.index, data_df[identifier2_name], label=identifier2_name, color='green')
+            ax_prices.set_ylabel('Valore', fontsize=10)
+        else:
+            percentage_increase_1 = (data_df[identifier1_name] / initial_value_1 - 1) * 100
+            percentage_increase_2 = (data_df[identifier2_name] / initial_value_2 - 1) * 100
+            
+            ax_prices.plot(data_df.index, percentage_increase_1, label=identifier1_name, color='blue')
+            ax_prices.plot(data_df.index, percentage_increase_2, label=identifier2_name, color='green')
+            ax_prices.set_title(f'Andamento Dati (Aumento Percentuale) {identifier1_name} vs {identifier2_name}', fontsize=12)
+            ax_prices.set_ylabel('Aumento Percentuale (%)', fontsize=10)
+
+        ax_prices.set_xlabel('Data', fontsize=10)
+        ax_prices.grid(True, linestyle='--', alpha=0.6)
+        ax_prices.legend()
+        plt.tight_layout()
+        return fig_prices
+
+    # Caso 2: Un prezzo e un indicatore economico
+    elif (not is_id1_fred and is_id2_fred) or (is_id1_fred and not is_id2_fred):
+        fig_prices, ax_prices = plt.subplots(figsize=(8, 4))
+        ax_prices_twin = ax_prices.twinx()
+
+        # Determina quale è il prezzo e quale l'indicatore
+        price_id = identifier1_name if not is_id1_fred else identifier2_name
+        econ_id = identifier2_name if not is_id1_fred else identifier1_name
+
+        ax_prices.plot(data_df.index, data_df[price_id], label=price_id, color='blue')
+        ax_prices_twin.plot(data_df.index, data_df[econ_id], label=econ_id, color='green', linestyle='--')
+
+        ax_prices.set_title(f'Andamento Dati {price_id} vs {econ_id}', fontsize=12)
+        ax_prices.set_xlabel('Data', fontsize=10)
+        ax_prices.set_ylabel(f'Valore {price_id}', color='blue', fontsize=10)
+        ax_prices_twin.set_ylabel(f'Valore {econ_id}', color='green', fontsize=10)
+
+        # Colora i tick labels degli assi per chiarezza
+        ax_prices.tick_params(axis='y', labelcolor='blue')
+        ax_prices_twin.tick_params(axis='y', labelcolor='green')
+
+        ax_prices.grid(True, linestyle='--', alpha=0.6)
+        # Combinare le leggende dai due assi
+        lines, labels = ax_prices.get_legend_handles_labels()
+        lines2, labels2 = ax_prices_twin.get_legend_handles_labels()
+        ax_prices_twin.legend(lines + lines2, labels + labels2, loc='upper left')
+
+        plt.tight_layout()
+        return fig_prices
+
+    # Caso 3: Entrambi sono indicatori economici FRED
+    else: # is_id1_fred and is_id2_fred
+        fig_prices, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), sharex=True) # Due subplots verticali, condividono asse X
+
+        # Primo indicatore
+        ax1.plot(data_df.index, data_df[identifier1_name], label=identifier1_name, color='blue')
+        ax1.set_title(f'Andamento Dati {identifier1_name}', fontsize=12)
+        ax1.set_ylabel(f'Valore {identifier1_name}', fontsize=10)
+        ax1.grid(True, linestyle='--', alpha=0.6)
+        ax1.legend()
+
+        # Secondo indicatore
+        ax2.plot(data_df.index, data_df[identifier2_name], label=identifier2_name, color='green')
+        ax2.set_title(f'Andamento Dati {identifier2_name}', fontsize=12)
+        ax2.set_xlabel('Data', fontsize=10)
+        ax2.set_ylabel(f'Valore {identifier2_name}', fontsize=10)
+        ax2.grid(True, linestyle='--', alpha=0.6)
+        ax2.legend()
+
+        plt.tight_layout()
+        return fig_prices
 
