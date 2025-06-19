@@ -29,6 +29,57 @@ def open_popup():
 def close_popup():
     st.session_state.show_popup = False
 
+indicators_info = """
+        Di seguito trovi un elenco degli ID serie FRED che puoi utilizzare nell'input, con il loro nome esteso e una breve descrizione.
+
+        * **UNRATE**: **Tasso di Disoccupazione Civile (Civilian Unemployment Rate)**
+            * Misura la percentuale della forza lavoro civile che è disoccupata ma attivamente in cerca di lavoro. È un indicatore chiave della salute del mercato del lavoro.
+        * **DGS10**: **Rendimento del Tesoro a 10 Anni (10-Year Treasury Constant Maturity Rate)**
+            * Rappresenta il rendimento annuale che un investitore si aspetterebbe da un'obbligazione del Tesoro statunitense con scadenza a 10 anni. È un punto di riferimento importante per i tassi di interesse a lungo termine e le aspettative di inflazione e crescita.
+        * **DGS02**: **Rendimento del Tesoro a 2 Anni (2-Year Treasury Constant Maturity Rate)**
+            * Rappresenta il rendimento annuale di un'obbligazione del Tesoro statunitense con scadenza a 2 anni. Spesso utilizzato come indicatore delle aspettative della Federal Reserve sui tassi di interesse a breve termine.
+        * **DGS30**: **Rendimento del Tesoro a 30 Anni (30-Year Treasury Constant Maturity Rate)**
+            * Rappresenta il rendimento annuale di un'obbligazione del Tesoro statunitense con scadenza a 30 anni, riflettendo le aspettative a lunghissimo termine su inflazione e crescita.
+        * **GDPC1**: **Prodotto Interno Lordo Reale (Real Gross Domestic Product)**
+            * Misura il valore totale di beni e servizi finali prodotti negli Stati Uniti, aggiustato per l'inflazione. È l'indicatore più ampio dell'attività economica e della crescita.
+        * **CPIAUCSL**: **Indice dei Prezzi al Consumo - Tutti gli Articoli (Consumer Price Index for All Urban Consumers: All Items)**
+            * Misura la variazione media nel tempo dei prezzi pagati dai consumatori urbani per un paniere di beni e servizi di consumo. È l'indicatore più comune dell'inflazione.
+        * **FEDFUNDS**: **Tasso sui Federal Funds (Federal Funds Effective Rate)**
+            * Il tasso di interesse overnight a cui le banche si prestano riserve non impegnate nel saldo dei rispettivi conti presso la Federal Reserve. È il principale strumento della politica monetaria della Fed.
+        * **RSAFS**: **Vendite al Dettaglio: Totale (Escluse le Vendite di Servizi Alimentari) (Retail Sales: Total (Excluding Food Services))**
+            * Misura il valore totale delle vendite di beni al dettaglio. È un indicatore chiave della spesa dei consumatori e della domanda interna.
+        * **INDPRO**: **Indice di Produzione Industriale (Industrial Production Index)**
+            * Misura la produzione del settore manifatturiero, minerario e delle utility. Offre una panoramica dell'attività produttiva e della salute dell'industria.
+        * **UMICHCSII**: **Indice di Sentimento dei Consumatori (University of Michigan: Consumer Sentiment Index)**
+            * Un indicatore che riflette la fiducia dei consumatori nell'economia. Un sentiment elevato può portare a una maggiore spesa e crescita.
+        * **PERMIT**: **Permessi di Costruzione (New Private Housing Units Authorized by Building Permits)**
+            * Il numero di permessi rilasciati per la costruzione di nuove case private. È un indicatore anticipatore dell'attività nel settore immobiliare e dell'economia in generale.
+        * **ICSA**: **Richieste Iniziali di Sussidi di Disoccupazione (Initial Claims for Unemployment Insurance, Seasonally Adjusted)**
+            * Il numero di persone che per la prima volta richiedono i sussidi di disoccupazione. Un aumento può segnalare un indebolimento del mercato del lavoro.
+        * **AWHMAN**: **Ore Settimanali Medie, Manifatturiero (Average Weekly Hours of Production and Nonsupervisory Employees: Manufacturing)**
+            * Le ore medie lavorate dal personale di produzione e non supervisore nel settore manifatturiero. Variazioni in questo indice possono anticipare cambiamenti nell'occupazione totale.
+        * **NEWORDER**: **Nuovi Ordini di Beni Durevoli (Manufacturers' New Orders: Durable Goods)**
+            * Misura il valore monetario dei nuovi ordini ricevuti dai produttori di beni durevoli. È un indicatore chiave della domanda futura e della fiducia delle imprese.
+        * **IPMAN**: **Produzione Manifatturiera (Manufacturing Output)**
+            * Un sotto-componente dell'Indice di Produzione Industriale che si concentra specificamente sulla produzione del settore manifatturiero, sensibile ai cicli economici.
+        * **ISRATIO**: **Rapporto Scorte/Vendite del Settore Manifatturiero e Commercio (Inventories to Sales Ratio: Manufacturing and Trade)**
+            * Rapporto tra le scorte di magazzino delle imprese e le loro vendite. Un aumento può indicare vendite rallentate e futura contrazione della produzione.
+        * **HOUST**: **Inizi di Costruzione di Nuove Case (Housing Starts: Total)**
+            * Misura l'inizio effettivo della costruzione di nuove unità abitative, un indicatore anticipatore della fiducia nel settore immobiliare e nell'economia.
+        * **TCU**: **Tasso di Utilizzo della Capacità Totale (Capacity Utilization: Total Industry)**
+            * Misura la percentuale di capacità produttiva totale che viene effettivamente utilizzata nell'industria. Livelli elevati possono segnalare pressioni inflazionistiche e la necessità di nuovi investimenti.
+        * **DSPIC96**: **Reddito Personale Disponibile Reale (Real Disposable Personal Income)**
+            * Il reddito che gli individui hanno a disposizione per spendere o risparmiare dopo aver pagato le tasse, aggiustato per l'inflazione. Direttamente collegato alla spesa dei consumatori.
+        * **CPILFESL**: **Inflazione "Core" (Consumer Price Index: All Items Less Food & Energy)**
+            * Misura la variazione media nel tempo dei prezzi al consumo rimuovendo le componenti più volatili (cibo ed energia), fornendo una misura più stabile dell'inflazione di fondo.
+        """
+
+@st.dialog("Info about available economic indicators")
+def show_infos():
+    st.write(indicators_info)
+    if st.button("Chiudi", on_click=close_popup):
+        st.rerun()
+
 # --- Campi di Input nella Sidebar ---
 st.sidebar.header("Parametri di Input")
 
@@ -297,60 +348,6 @@ st.sidebar.button("Apri Informazioni Extra", on_click=open_popup)
 
 if st.session_state.show_popup:
     show_infos()
-
-
-@st.dialog("Info about available economic indicators")
-def show_infos():
-    st.write(f"Why is {item} your favorite?")
-    if st.button("Chiudi", on_click=close_popup):
-        st.rerun()
-
-
-
-indicators_info = """
-        Di seguito trovi un elenco degli ID serie FRED che puoi utilizzare nell'input, con il loro nome esteso e una breve descrizione.
-
-        * **UNRATE**: **Tasso di Disoccupazione Civile (Civilian Unemployment Rate)**
-            * Misura la percentuale della forza lavoro civile che è disoccupata ma attivamente in cerca di lavoro. È un indicatore chiave della salute del mercato del lavoro.
-        * **DGS10**: **Rendimento del Tesoro a 10 Anni (10-Year Treasury Constant Maturity Rate)**
-            * Rappresenta il rendimento annuale che un investitore si aspetterebbe da un'obbligazione del Tesoro statunitense con scadenza a 10 anni. È un punto di riferimento importante per i tassi di interesse a lungo termine e le aspettative di inflazione e crescita.
-        * **DGS02**: **Rendimento del Tesoro a 2 Anni (2-Year Treasury Constant Maturity Rate)**
-            * Rappresenta il rendimento annuale di un'obbligazione del Tesoro statunitense con scadenza a 2 anni. Spesso utilizzato come indicatore delle aspettative della Federal Reserve sui tassi di interesse a breve termine.
-        * **DGS30**: **Rendimento del Tesoro a 30 Anni (30-Year Treasury Constant Maturity Rate)**
-            * Rappresenta il rendimento annuale di un'obbligazione del Tesoro statunitense con scadenza a 30 anni, riflettendo le aspettative a lunghissimo termine su inflazione e crescita.
-        * **GDPC1**: **Prodotto Interno Lordo Reale (Real Gross Domestic Product)**
-            * Misura il valore totale di beni e servizi finali prodotti negli Stati Uniti, aggiustato per l'inflazione. È l'indicatore più ampio dell'attività economica e della crescita.
-        * **CPIAUCSL**: **Indice dei Prezzi al Consumo - Tutti gli Articoli (Consumer Price Index for All Urban Consumers: All Items)**
-            * Misura la variazione media nel tempo dei prezzi pagati dai consumatori urbani per un paniere di beni e servizi di consumo. È l'indicatore più comune dell'inflazione.
-        * **FEDFUNDS**: **Tasso sui Federal Funds (Federal Funds Effective Rate)**
-            * Il tasso di interesse overnight a cui le banche si prestano riserve non impegnate nel saldo dei rispettivi conti presso la Federal Reserve. È il principale strumento della politica monetaria della Fed.
-        * **RSAFS**: **Vendite al Dettaglio: Totale (Escluse le Vendite di Servizi Alimentari) (Retail Sales: Total (Excluding Food Services))**
-            * Misura il valore totale delle vendite di beni al dettaglio. È un indicatore chiave della spesa dei consumatori e della domanda interna.
-        * **INDPRO**: **Indice di Produzione Industriale (Industrial Production Index)**
-            * Misura la produzione del settore manifatturiero, minerario e delle utility. Offre una panoramica dell'attività produttiva e della salute dell'industria.
-        * **UMICHCSII**: **Indice di Sentimento dei Consumatori (University of Michigan: Consumer Sentiment Index)**
-            * Un indicatore che riflette la fiducia dei consumatori nell'economia. Un sentiment elevato può portare a una maggiore spesa e crescita.
-        * **PERMIT**: **Permessi di Costruzione (New Private Housing Units Authorized by Building Permits)**
-            * Il numero di permessi rilasciati per la costruzione di nuove case private. È un indicatore anticipatore dell'attività nel settore immobiliare e dell'economia in generale.
-        * **ICSA**: **Richieste Iniziali di Sussidi di Disoccupazione (Initial Claims for Unemployment Insurance, Seasonally Adjusted)**
-            * Il numero di persone che per la prima volta richiedono i sussidi di disoccupazione. Un aumento può segnalare un indebolimento del mercato del lavoro.
-        * **AWHMAN**: **Ore Settimanali Medie, Manifatturiero (Average Weekly Hours of Production and Nonsupervisory Employees: Manufacturing)**
-            * Le ore medie lavorate dal personale di produzione e non supervisore nel settore manifatturiero. Variazioni in questo indice possono anticipare cambiamenti nell'occupazione totale.
-        * **NEWORDER**: **Nuovi Ordini di Beni Durevoli (Manufacturers' New Orders: Durable Goods)**
-            * Misura il valore monetario dei nuovi ordini ricevuti dai produttori di beni durevoli. È un indicatore chiave della domanda futura e della fiducia delle imprese.
-        * **IPMAN**: **Produzione Manifatturiera (Manufacturing Output)**
-            * Un sotto-componente dell'Indice di Produzione Industriale che si concentra specificamente sulla produzione del settore manifatturiero, sensibile ai cicli economici.
-        * **ISRATIO**: **Rapporto Scorte/Vendite del Settore Manifatturiero e Commercio (Inventories to Sales Ratio: Manufacturing and Trade)**
-            * Rapporto tra le scorte di magazzino delle imprese e le loro vendite. Un aumento può indicare vendite rallentate e futura contrazione della produzione.
-        * **HOUST**: **Inizi di Costruzione di Nuove Case (Housing Starts: Total)**
-            * Misura l'inizio effettivo della costruzione di nuove unità abitative, un indicatore anticipatore della fiducia nel settore immobiliare e nell'economia.
-        * **TCU**: **Tasso di Utilizzo della Capacità Totale (Capacity Utilization: Total Industry)**
-            * Misura la percentuale di capacità produttiva totale che viene effettivamente utilizzata nell'industria. Livelli elevati possono segnalare pressioni inflazionistiche e la necessità di nuovi investimenti.
-        * **DSPIC96**: **Reddito Personale Disponibile Reale (Real Disposable Personal Income)**
-            * Il reddito che gli individui hanno a disposizione per spendere o risparmiare dopo aver pagato le tasse, aggiustato per l'inflazione. Direttamente collegato alla spesa dei consumatori.
-        * **CPILFESL**: **Inflazione "Core" (Consumer Price Index: All Items Less Food & Energy)**
-            * Misura la variazione media nel tempo dei prezzi al consumo rimuovendo le componenti più volatili (cibo ed energia), fornendo una misura più stabile dell'inflazione di fondo.
-        """
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("Creato con Streamlit, yfinance e dati FRED")
