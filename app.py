@@ -32,13 +32,6 @@ def close_popup():
 # --- Campi di Input nella Sidebar ---
 st.sidebar.header("Parametri di Input")
 
-# Aggiungi l'input per la chiave API FRED
-fred_api_key = st.sidebar.text_input(
-    "Chiave API FRED (obbligatoria per dati FRED):",
-    type="password", # Nasconde la chiave mentre viene digitata
-    help="Ottieni la tua chiave API gratuita su https://fred.stlouisfed.org/docs/api/api_key.html"
-)
-
 # 1. Text box per i ticker/serie dati
 identifier_input = st.sidebar.text_area(
     "Inserisci i simboli (es. SPY, GLD) o ID serie FRED (es. UNRATE, DGS10) separati da virgole o spazi:",
@@ -74,7 +67,7 @@ selected_interval_label = st.sidebar.selectbox(
 yf_interval = interval_options[selected_interval_label]
 
 # 4. Selezione del tipo di prezzo per Yahoo Finance
-price_type_options = ["Adj Close", "Close", "Open", "High", "Low"]
+price_type_options = ["Close", "Open", "High", "Low"]
 selected_price_type = st.sidebar.selectbox(
     "Tipo di Prezzo (per Yahoo Finance):",
     options=price_type_options,
@@ -134,7 +127,6 @@ if st.sidebar.button("Esegui Analisi"):
                     end_date.strftime('%Y-%m-%d'),
                     yf_interval,
                     selected_price_type,
-                    fred_api_key # Passa qui la chiave API
                 )
                 if error:
                     st.error(f"Errore durante il download o la determinazione della frequenza per '{identifier}': {error}")
