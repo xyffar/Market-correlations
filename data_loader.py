@@ -47,7 +47,7 @@ def get_yfinance_data(ticker: str, start_date: str, end_date: str, interval: str
     except Exception as e:
         return None, None, f"Errore durante il download o l'elaborazione da Yahoo Finance per '{ticker}': {e}"
 
-def get_fred_data(series_id: str, start_date: str, end_date: str):
+def get_fred_data(series_id: str, start_date: str, end_date: str, api_key: str): # Aggiunto api_key qui
     """
     Scarica i dati storici da FRED (Federal Reserve Economic Data) per un dato series_id usando pandas_datareader.
 
@@ -62,8 +62,11 @@ def get_fred_data(series_id: str, start_date: str, end_date: str):
                 Serie dei dati FRED, frequenza inferita, messaggio di errore.
     """
     try:
+        if not api_key:
+            return None, None, "Errore: Chiave API FRED non fornita. Necessaria per scaricare dati FRED."
+
         # pandas_datareader gestisce la data di inizio e fine direttamente
-        series_data = web.DataReader(series_id, 'fred', start=start_date, end=end_date)
+        series_data = web.DataReader(series_id, 'fred', start=start_date, end=end_date, api_key=api_key) # Passa api_key qui
 
         if series_data is None or series_data.empty:
             return None, None, f"Errore: Nessun dato FRED disponibile per '{series_id}' nel periodo specificato o chiave API non valida."
@@ -82,7 +85,7 @@ def get_fred_data(series_id: str, start_date: str, end_date: str):
     except Exception as e:
         return None, None, f"Errore durante il download o l'elaborazione da FRED per '{series_id}' (con API): {e}. Controlla la chiave API e l'ID serie."
 
-def get_data_for_identifier(identifier: str, start_date: str, end_date: str, yf_interval: str, yf_price_type: str = "Close"):
+def get_data_for_identifier(identifier: str, start_date: str, end_date: str, yf_interval: str, yf_price_type: str = "Close", fred_api_key: str = None): # Aggiunto fred_api_key qui
     """
     Funzione wrapper per scaricare dati, distinguendo tra Yahoo Finance e FRED.
 
@@ -104,6 +107,6 @@ def get_data_for_identifier(identifier: str, start_date: str, end_date: str, yf_
                         'NEWORDER', 'IPMAN', 'ISRATIO', 'HOUST', 'TCU', 'DSPIC96', 'CPILFESL']
 
     if identifier in fred_series_ids:
-        return get_fred_data(identifier, start_date, end_date) # Passa la chiave API
+        return get_fred_data(identifier, start_date, end_date, fred_api_key) # Passa la chiave API qui
     else:
         return get_yfinance_data(identifier, start_date, end_date, yf_interval, yf_price_type)
