@@ -156,54 +156,35 @@ def plot_data_trends(data_df: pd.DataFrame, identifier1_name: str, identifier2_n
         plt.tight_layout()
         return fig_prices
 
-    # Caso 2: Un prezzo e un indicatore economico
-    elif (not is_id1_fred and is_id2_fred) or (is_id1_fred and not is_id2_fred):
+    # Caso 2 & 3: Un prezzo e un indicatore economico OPPURE Due indicatori economici
+    else: # (not is_id1_fred and is_id2_fred) or (is_id1_fred and not is_id2_fred) or (is_id1_fred and is_id2_fred)
         fig_prices, ax_prices = plt.subplots(figsize=(8, 4))
         ax_prices_twin = ax_prices.twinx()
 
-        # Determina quale è il prezzo e quale l'indicatore
-        price_id = identifier1_name if not is_id1_fred else identifier2_name
-        econ_id = identifier2_name if not is_id1_fred else identifier1_name
+        # Determinare il colore e lo stile per ogni linea
+        color1 = 'blue'
+        color2 = 'green'
+        linestyle1 = '-'
+        linestyle2 = '--'
 
-        ax_prices.plot(data_df.index, data_df[price_id], label=price_id, color='blue')
-        ax_prices_twin.plot(data_df.index, data_df[econ_id], label=econ_id, color='green', linestyle='--')
+        # Plotta la prima serie sull'asse primario
+        ax_prices.plot(data_df.index, data_df[identifier1_name], label=identifier1_name, color=color1, linestyle=linestyle1)
+        ax_prices.set_ylabel(f'Valore {identifier1_name}', color=color1, fontsize=10)
+        ax_prices.tick_params(axis='y', labelcolor=color1)
 
-        ax_prices.set_title(f'Andamento Dati {price_id} vs {econ_id}', fontsize=12)
+        # Plotta la seconda serie sull'asse secondario
+        ax_prices_twin.plot(data_df.index, data_df[identifier2_name], label=identifier2_name, color=color2, linestyle=linestyle2)
+        ax_prices_twin.set_ylabel(f'Valore {identifier2_name}', color=color2, fontsize=10)
+        ax_prices_twin.tick_params(axis='y', labelcolor=color2)
+
+        ax_prices.set_title(f'Andamento Dati {identifier1_name} vs {identifier2_name}', fontsize=12)
         ax_prices.set_xlabel('Data', fontsize=10)
-        ax_prices.set_ylabel(f'Valore {price_id}', color='blue', fontsize=10)
-        ax_prices_twin.set_ylabel(f'Valore {econ_id}', color='green', fontsize=10)
-
-        # Colora i tick labels degli assi per chiarezza
-        ax_prices.tick_params(axis='y', labelcolor='blue')
-        ax_prices_twin.tick_params(axis='y', labelcolor='green')
-
         ax_prices.grid(True, linestyle='--', alpha=0.6)
+
         # Combinare le leggende dai due assi
         lines, labels = ax_prices.get_legend_handles_labels()
         lines2, labels2 = ax_prices_twin.get_legend_handles_labels()
         ax_prices_twin.legend(lines + lines2, labels + labels2, loc='upper left')
-
-        plt.tight_layout()
-        return fig_prices
-
-    # Caso 3: Entrambi sono indicatori economici FRED
-    else: # is_id1_fred and is_id2_fred
-        fig_prices, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), sharex=True) # Due subplots verticali, condividono asse X
-
-        # Primo indicatore
-        ax1.plot(data_df.index, data_df[identifier1_name], label=identifier1_name, color='blue')
-        ax1.set_title(f'Andamento Dati {identifier1_name}', fontsize=12)
-        ax1.set_ylabel(f'Valore {identifier1_name}', fontsize=10)
-        ax1.grid(True, linestyle='--', alpha=0.6)
-        ax1.legend()
-
-        # Secondo indicatore
-        ax2.plot(data_df.index, data_df[identifier2_name], label=identifier2_name, color='green')
-        ax2.set_title(f'Andamento Dati {identifier2_name}', fontsize=12)
-        ax2.set_xlabel('Data', fontsize=10)
-        ax2.set_ylabel(f'Valore {identifier2_name}', fontsize=10)
-        ax2.grid(True, linestyle='--', alpha=0.6)
-        ax2.legend()
 
         plt.tight_layout()
         return fig_prices
