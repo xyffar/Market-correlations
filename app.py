@@ -30,53 +30,37 @@ def close_popup():
     st.session_state.show_popup = False
 
 indicators_info = """
-        Di seguito trovi un elenco degli ID serie FRED che puoi utilizzare nell'input, con il loro nome esteso e una breve descrizione.
+### Indici FRED Disponibili
 
-        * **UNRATE**: **Tasso di Disoccupazione Civile (Civilian Unemployment Rate)**
-            * Misura la percentuale della forza lavoro civile che è disoccupata ma attivamente in cerca di lavoro. È un indicatore chiave della salute del mercato del lavoro.
-        * **DGS10**: **Rendimento del Tesoro a 10 Anni (10-Year Treasury Constant Maturity Rate)**
-            * Rappresenta il rendimento annuale che un investitore si aspetterebbe da un'obbligazione del Tesoro statunitense con scadenza a 10 anni. È un punto di riferimento importante per i tassi di interesse a lungo termine e le aspettative di inflazione e crescita.
-        * **DGS02**: **Rendimento del Tesoro a 2 Anni (2-Year Treasury Constant Maturity Rate)**
-            * Rappresenta il rendimento annuale di un'obbligazione del Tesoro statunitense con scadenza a 2 anni. Spesso utilizzato come indicatore delle aspettative della Federal Reserve sui tassi di interesse a breve termine.
-        * **DGS30**: **Rendimento del Tesoro a 30 Anni (30-Year Treasury Constant Maturity Rate)**
-            * Rappresenta il rendimento annuale di un'obbligazione del Tesoro statunitense con scadenza a 30 anni, riflettendo le aspettative a lunghissimo termine su inflazione e crescita.
-        * **GDPC1**: **Prodotto Interno Lordo Reale (Real Gross Domestic Product)**
-            * Misura il valore totale di beni e servizi finali prodotti negli Stati Uniti, aggiustato per l'inflazione. È l'indicatore più ampio dell'attività economica e della crescita.
-        * **CPIAUCSL**: **Indice dei Prezzi al Consumo - Tutti gli Articoli (Consumer Price Index for All Urban Consumers: All Items)**
-            * Misura la variazione media nel tempo dei prezzi pagati dai consumatori urbani per un paniere di beni e servizi di consumo. È l'indicatore più comune dell'inflazione.
-        * **FEDFUNDS**: **Tasso sui Federal Funds (Federal Funds Effective Rate)**
-            * Il tasso di interesse overnight a cui le banche si prestano riserve non impegnate nel saldo dei rispettivi conti presso la Federal Reserve. È il principale strumento della politica monetaria della Fed.
-        * **RSAFS**: **Vendite al Dettaglio: Totale (Escluse le Vendite di Servizi Alimentari) (Retail Sales: Total (Excluding Food Services))**
-            * Misura il valore totale delle vendite di beni al dettaglio. È un indicatore chiave della spesa dei consumatori e della domanda interna.
-        * **INDPRO**: **Indice di Produzione Industriale (Industrial Production Index)**
-            * Misura la produzione del settore manifatturiero, minerario e delle utility. Offre una panoramica dell'attività produttiva e della salute dell'industria.
-        * **UMICHCSII**: **Indice di Sentimento dei Consumatori (University of Michigan: Consumer Sentiment Index)**
-            * Un indicatore che riflette la fiducia dei consumatori nell'economia. Un sentiment elevato può portare a una maggiore spesa e crescita.
-        * **PERMIT**: **Permessi di Costruzione (New Private Housing Units Authorized by Building Permits)**
-            * Il numero di permessi rilasciati per la costruzione di nuove case private. È un indicatore anticipatore dell'attività nel settore immobiliare e dell'economia in generale.
-        * **ICSA**: **Richieste Iniziali di Sussidi di Disoccupazione (Initial Claims for Unemployment Insurance, Seasonally Adjusted)**
-            * Il numero di persone che per la prima volta richiedono i sussidi di disoccupazione. Un aumento può segnalare un indebolimento del mercato del lavoro.
-        * **AWHMAN**: **Ore Settimanali Medie, Manifatturiero (Average Weekly Hours of Production and Nonsupervisory Employees: Manufacturing)**
-            * Le ore medie lavorate dal personale di produzione e non supervisore nel settore manifatturiero. Variazioni in questo indice possono anticipare cambiamenti nell'occupazione totale.
-        * **NEWORDER**: **Nuovi Ordini di Beni Durevoli (Manufacturers' New Orders: Durable Goods)**
-            * Misura il valore monetario dei nuovi ordini ricevuti dai produttori di beni durevoli. È un indicatore chiave della domanda futura e della fiducia delle imprese.
-        * **IPMAN**: **Produzione Manifatturiera (Manufacturing Output)**
-            * Un sotto-componente dell'Indice di Produzione Industriale che si concentra specificamente sulla produzione del settore manifatturiero, sensibile ai cicli economici.
-        * **ISRATIO**: **Rapporto Scorte/Vendite del Settore Manifatturiero e Commercio (Inventories to Sales Ratio: Manufacturing and Trade)**
-            * Rapporto tra le scorte di magazzino delle imprese e le loro vendite. Un aumento può indicare vendite rallentate e futura contrazione della produzione.
-        * **HOUST**: **Inizi di Costruzione di Nuove Case (Housing Starts: Total)**
-            * Misura l'inizio effettivo della costruzione di nuove unità abitative, un indicatore anticipatore della fiducia nel settore immobiliare e nell'economia.
-        * **TCU**: **Tasso di Utilizzo della Capacità Totale (Capacity Utilization: Total Industry)**
-            * Misura la percentuale di capacità produttiva totale che viene effettivamente utilizzata nell'industria. Livelli elevati possono segnalare pressioni inflazionistiche e la necessità di nuovi investimenti.
-        * **DSPIC96**: **Reddito Personale Disponibile Reale (Real Disposable Personal Income)**
-            * Il reddito che gli individui hanno a disposizione per spendere o risparmiare dopo aver pagato le tasse, aggiustato per l'inflazione. Direttamente collegato alla spesa dei consumatori.
-        * **CPILFESL**: **Inflazione "Core" (Consumer Price Index: All Items Less Food & Energy)**
-            * Misura la variazione media nel tempo dei prezzi al consumo rimuovendo le componenti più volatili (cibo ed energia), fornendo una misura più stabile dell'inflazione di fondo.
-        """
+Di seguito trovi un elenco degli ID serie FRED che puoi utilizzare nell'input, con il loro nome esteso, una breve spiegazione e il motivo per cui potrebbero essere correlati con i mercati finanziari.
+
+| Simbolo | Nome | Spiegazione | Motivo della Correlazione (con Mercati Finanziari) |
+|---|---|---|---|
+| **UNRATE** | Tasso di Disoccupazione Civile | Percentuale della forza lavoro disoccupata e in cerca di lavoro. | **Indicatore Lagging/Coincidente:** Un tasso di disoccupazione basso indica un'economia forte, con implicazioni positive per i consumi e gli utili aziendali (mercato azionario) e possibili pressioni inflazionistiche (tassi di interesse). |
+| **DGS10** | Rendimento Tesoro 10 Anni | Rendimento annuale di un'obbligazione del Tesoro USA a 10 anni. | **Indicatore Leading/Coincidente:** Riflette le aspettative di inflazione e crescita economica a lungo termine. Un aumento suggerisce aspettative di crescita economica e inflazione più elevate, che possono influenzare i prezzi delle azioni (attraverso i tassi di sconto) e i mercati obbligazionari. |
+| **DGS02** | Rendimento Tesoro 2 Anni | Rendimento annuale di un'obbligazione del Tesoro USA a 2 anni. | **Indicatore Leading:** Molto sensibile alle aspettative della Federal Reserve sui tassi di interesse a breve termine. Le sue variazioni possono anticipare le mosse della banca centrale, influenzando direttamente i tassi di prestito e l'appetito per il rischio. |
+| **DGS30** | Rendimento Tesoro 30 Anni | Rendimento annuale di un'obbligazione del Tesoro USA a 30 anni. | **Indicatore Leading/Coincidente:** Riflette le aspettative a lunghissimo termine. Utile per analizzare la forma della curva dei rendimenti, che può predire recessioni o espansioni. |
+| **GDPC1** | Prodotto Interno Lordo Reale | Misura il valore totale di beni e servizi finali prodotti, aggiustato per l'inflazione. | **Indicatore Coincidente/Lagging:** Il PIL è la misura più ampia dell'attività economica. La sua crescita indica salute economica, che generalmente supporta i profitti aziendali e i prezzi delle azioni. |
+| **CPIAUCSL** | Indice dei Prezzi al Consumo - Tutti gli Articoli | Variazione media dei prezzi pagati dai consumatori per beni e servizi. | **Indicatore Coincidente:** L'inflazione erode il potere d'acquisto e può spingere le banche centrali ad alzare i tassi, influenzando i costi di finanziamento delle aziende e il valore degli asset. |
+| **FEDFUNDS** | Tasso sui Federal Funds | Tasso di interesse overnight tra le banche per le riserve. | **Indicatore Coincidente/Lagging:** È il principale strumento della politica monetaria della Fed. Le sue modifiche (o aspettative di modifica) influenzano direttamente i tassi di interesse a breve termine e, di conseguenza, i mutui, i prestiti aziendali e la valutazione degli asset. |
+| **RSAFS** | Vendite al Dettaglio: Totale (Escluse Food Services) | Valore totale delle vendite di beni al dettaglio. | **Indicatore Coincidente:** La spesa dei consumatori è un motore cruciale dell'economia. Forte crescita delle vendite al dettaglio indica fiducia dei consumatori e domanda robusta, positiva per le aziende del settore e il mercato azionario. |
+| **INDPRO** | Indice di Produzione Industriale | Misura la produzione dei settori manifatturiero, minerario e delle utility. | **Indicatore Coincidente:** Riflette l'attività produttiva dell'economia. Una crescita indica espansione industriale, aumento degli ordini e potenziale aumento dell'occupazione. |
+| **UMICHCSII** | Indice di Sentimento dei Consumatori | Riflette la fiducia dei consumatori nell'economia. | **Indicatore Leading:** Il sentimento dei consumatori spesso anticipa i loro futuri modelli di spesa e risparmio, influenzando la domanda aggregata e le prospettive di crescita economica. |
+| **PERMIT** | Permessi di Costruzione | Numero di permessi rilasciati per la costruzione di nuove case private. | **Indicatore Leading:** L'attività edilizia è un motore economico importante. Un aumento dei permessi indica fiducia nel futuro dell'economia e della domanda, anticipando investimenti e creazione di posti di lavoro. |
+| **ICSA** | Richieste Iniziali Sussidi Disoccupazione | Numero di persone che per la prima volta richiedono sussidi di disoccupazione. | **Indicatore Leading:** Un aumento improvviso può segnalare un indebolimento del mercato del lavoro e un rallentamento economico, portando a incertezza nei mercati. |
+| **AWHMAN** | Ore Settimanali Medie, Manifatturiero | Ore medie lavorate nel settore manifatturiero. | **Indicatore Leading:** I datori di lavoro spesso modificano le ore di lavoro prima di assumere o licenziare. Un aumento può anticipare assunzioni future e maggiore produzione. |
+| **NEWORDER** | Nuovi Ordini di Beni Durevoli | Valore monetario dei nuovi ordini ricevuti dai produttori di beni durevoli. | **Indicatore Leading:** È una misura della domanda futura per prodotti a lungo termine. Un aumento indica fiducia nelle prospettive economiche e intenzione di espansione aziendale. |
+| **IPMAN** | Produzione Manifatturiera | Produzione del solo settore manifatturiero. | **Indicatore Coincidente:** Un sotto-componente di INDPRO, ma più specifico. La sua performance è un barometro della salute industriale e degli utili aziendali nel settore. |
+| **ISRATIO** | Rapporto Scorte/Vendite | Rapporto tra scorte di magazzino e vendite delle imprese. | **Indicatore Leading/Coincidente:** Un aumento del rapporto può suggerire che le vendite stanno rallentando e che le aziende potrebbero ridurre la produzione in futuro per smaltire le scorte. |
+| **HOUST** | Inizi di Costruzione Nuove Case | Inizi effettivi della costruzione di nuove unità abitative. | **Indicatore Leading:** Simile a PERMIT, conferma l'avvio di nuovi progetti. Un settore abitativo robusto è solitamente correlato a un'economia in crescita. |
+| **TCU** | Tasso di Utilizzo della Capacità Totale | Percentuale della capacità produttiva totale utilizzata nell'industria. | **Indicatore Coincidente/Leading:** Alti livelli possono indicare che l'economia si sta surriscaldando e potrebbero esserci pressioni inflazionistiche future, o che le aziende investiranno per espandere la capacità. |
+| **DSPIC96** | Reddito Personale Disponibile Reale | Reddito a disposizione degli individui dopo le tasse, aggiustato per l'inflazione. | **Indicatore Coincidente:** Direttamente legato al potere d'acquisto dei consumatori. Un aumento supporta la spesa e la crescita economica. |
+| **CPILFESL** | Inflazione "Core" (CPI Less Food & Energy) | Variazione dei prezzi al consumo escludendo cibo ed energia (volatili). | **Indicatore Coincidente:** Spesso la metrica di inflazione preferita dalle banche centrali per le decisioni di politica monetaria, in quanto più stabile e rappresentativa delle pressioni inflazionistiche di fondo. |
+"""
 
 @st.dialog("Info about available economic indicators", width="large")
 def show_infos():
-    st.write(indicators_info)
+    st.markdown(indicators_info, unsafe_allow_html=True) # Usa st.markdown e unsafe_allow_html per renderizzare la tabella
     if st.button("Chiudi", on_click=close_popup):
         st.rerun()
 
@@ -112,7 +96,7 @@ start_date = col1.date_input(
 )
 end_date = col2.date_input(
     "Data di Fine:",
-    value=pd.to_datetime("2024-12-31"),
+    value=pd.to_datetime("2025-12-31"),
     help="Seleziona la data di fine per il recupero dei dati."
 )
 
@@ -131,11 +115,11 @@ selected_interval_label = st.sidebar.selectbox(
 yf_interval = interval_options[selected_interval_label]
 
 # 4. Selezione del tipo di prezzo per Yahoo Finance
-price_type_options = ["Close", "Close", "Open", "High", "Low"] # Re-aggiunto "Adj Close"
+price_type_options = ["Close", "Open", "High", "Low"]
 selected_price_type = st.sidebar.selectbox(
     "Tipo di Prezzo (per Yahoo Finance):",
     options=price_type_options,
-    index=0, # Default to 'Adj Close'
+    index=0, # Default to 'Close'
     help="Scegli quale tipo di prezzo utilizzare per i ticker di Yahoo Finance."
 )
 
