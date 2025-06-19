@@ -74,7 +74,7 @@ indicators_info = """
             * Misura la variazione media nel tempo dei prezzi al consumo rimuovendo le componenti più volatili (cibo ed energia), fornendo una misura più stabile dell'inflazione di fondo.
         """
 
-@st.dialog("Info about available economic indicators")
+@st.dialog("Info about available economic indicators", width="large")
 def show_infos():
     st.write(indicators_info)
     if st.button("Chiudi", on_click=close_popup):
