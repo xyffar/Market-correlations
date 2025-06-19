@@ -295,11 +295,20 @@ if st.sidebar.button("Esegui Analisi"):
 st.sidebar.markdown("---")
 st.sidebar.button("Apri Informazioni Extra", on_click=open_popup)
 
-# --- Contenitore per il popup ---
 if st.session_state.show_popup:
-    with st.container(border=True):
-        st.subheader("Indici FRED Disponibili")
-        st.markdown("""
+    show_infos()
+
+
+@st.dialog("Info about available economic indicators")
+def show_infos():
+    st.write(f"Why is {item} your favorite?")
+    if st.button("Submit"):
+        st.session_state.vote = {"item": item, "reason": reason}
+        st.rerun()
+
+
+
+indicators_info = """
         Di seguito trovi un elenco degli ID serie FRED che puoi utilizzare nell'input, con il loro nome esteso e una breve descrizione.
 
         * **UNRATE**: **Tasso di Disoccupazione Civile (Civilian Unemployment Rate)**
@@ -342,9 +351,7 @@ if st.session_state.show_popup:
             * Il reddito che gli individui hanno a disposizione per spendere o risparmiare dopo aver pagato le tasse, aggiustato per l'inflazione. Direttamente collegato alla spesa dei consumatori.
         * **CPILFESL**: **Inflazione "Core" (Consumer Price Index: All Items Less Food & Energy)**
             * Misura la variazione media nel tempo dei prezzi al consumo rimuovendo le componenti più volatili (cibo ed energia), fornendo una misura più stabile dell'inflazione di fondo.
-        """)
-        st.button("Chiudi", on_click=close_popup)
-
+        """
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("Creato con Streamlit, yfinance e dati FRED")
