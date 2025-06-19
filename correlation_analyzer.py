@@ -82,7 +82,7 @@ def calculate_cross_correlation(series1: pd.Series, series2: pd.Series, max_lags
                 's2': series2_aligned
             }).dropna() # Elimina i NaN introdotti dallo shifting e disallineamento
 
-        if len(temp_df) >= 2: # Sono necessari almeno 2 punti dati per calcolare la correlazione
+        if len(temp_df) >= max_lags: # Sono necessari almeno 2 punti dati per calcolare la correlazione
             if lag >= 0:
                 corr = temp_df['s1'].corr(temp_df['s2_shifted'])
             else:
