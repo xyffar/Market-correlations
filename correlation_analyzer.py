@@ -100,7 +100,7 @@ def plot_cross_correlation(lags: np.ndarray, correlations: np.ndarray, ticker1_n
         matplotlib.figure.Figure: L'oggetto figura del grafico.
     """
     fig_corr, ax_corr = plt.subplots(figsize=(8, 4))
-    ax_corr.stem(lags, correlations, use_line_collection=True)
+    ax_corr.stem(lags, correlations) # Rimosso use_line_collection=True
     ax_corr.set_title(f'Cross-Correlazione Rendimenti', fontsize=12)
     ax_corr.set_xlabel(f'Lag (Periodi {selected_interval_label}) - Positivo: {ticker2_name} anticipa {ticker1_name}; Negativo: {ticker1_name} anticipa {ticker2_name}', fontsize=10)
     ax_corr.set_ylabel('Coefficiente di Correlazione', fontsize=10)
